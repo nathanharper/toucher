@@ -43,8 +43,22 @@ return function(class, vals)
 
     setmetatable(class, mt)
 
+    local idx_func = function(t,k)
+        if 'animation' == k then
+            return t.curr_anim and t.animations[t.curr_anim]
+        else
+            return class[k]
+        end
+        return false
+    end
+
     class.new = class.new or function(_, init)
-        return setmetatable(init, {__index = class})
+        init = init or {}
+        return setmetatable(init, {__index = idx_func})
+    end
+
+    function class:selectAnimation(name)
+        self.curr_anim = name
     end
 
     class.update = class.update or function(self, dt)
@@ -78,9 +92,12 @@ return function(class, vals)
             self.gfx:getWidth(), self.gfx:getHeight())
     end
 
-    class.add_animation = class.add_animation or function(self, name, type, time, ...)
+    class.add_animation = class.add_animation or function(self, name, type, time, callback, ...)
         assert(self.grid, "no goddam greeeeeed")
         self.animations[name] = anim8.newAnimation(type, self.grid(unpack(arg)), time)
+        if callback then
+            self.animations[name]:addCallback(callback)
+        end
     end
 
     class.add_quad = class.new_quad or function(self, where, top, left)

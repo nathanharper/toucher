@@ -255,6 +255,15 @@ function Animation:gotoFrame(position)
   self.position = position
 end
 
+function Animation:reset()
+  self.position = 1
+  self.direction = 1
+  self.timer = 0
+  self.status = "playing"
+  self.flippedH = false
+  self.flippedY = false
+end
+
 function Animation:draw(image, x, y, r, sx, sy, ox, oy, ...)
   local frame = self.frames[self.position]
   if self.flippedH or self.flippedV then
@@ -271,6 +280,18 @@ function Animation:draw(image, x, y, r, sx, sy, ox, oy, ...)
     end
   end
   love.graphics.drawq(image, frame, x, y, r, sx, sy, ox, oy, ...)
+end
+
+-- Add a callback at end of animation.
+function Animation:addCallback(callback)
+  local oldCall = self.endSequence
+  local newCall = 'bounce' == self.mode 
+    and function(self) if self.direction > 0 then callback(self) end end
+    or callback
+  self.endSequence = function(self)
+    oldCall(self)
+    newCall(self)
+  end
 end
 
 -----------------------------------------------------------
