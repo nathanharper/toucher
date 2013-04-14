@@ -1,16 +1,15 @@
 require "map-functions"
+require "world-functions"
 local touchy = require "toucher"
-local x, y = 100, 200
-local curr_map
--- local linda
 
 -- GAME STATE
-STATE = {
+local STATE = {
+    world = nil,        -- reference for what map to use at different coordinates
     gamestate = 'play',
     transition = nil,
     map = {
-        curr = nil, -- current map SpriteBatch
-        prev = nil  -- this is used to animate map transitions
+        curr = nil,     -- current map SpriteBatch
+        prev = nil      -- this is used to animate map transitions
     }
 }
 
@@ -18,8 +17,8 @@ STATE = {
 -- LOVE EVENTS --
 --
 function love.load()
-    STATE.map.curr = loadMap('maps/chez-peter.lua')
-    -- linda = love.graphics.newImage('lin.png')
+    local mapname = loadWorld('worlds/1.lua')
+    STATE.map.curr = loadMap('maps/' .. mapname .. '.lua')
     love.graphics.setBackgroundColor(255,255,255)
     touchy:load()
 end
@@ -27,16 +26,7 @@ end
 function love.update(dt)
     if STATE.gamestate == 'play' then -- Normal game state
         touchy:update(dt) -- Update character position
-
-        -- loop thru all collision events and such
-        local e,a,b,c,d
-        for e,a,b,c,d in love.event.poll() do
-            if     'transition' == e then
-                changeRoom(a) -- 'a' is the direction
-            elseif 'collision' == e then
-                -- a and b are collion objects. c and d are x and y collision coords?
-            end
-        end
+        processEvents()
     elseif STATE.gamestate == 'transition' then -- map is in transition
         -- update current map, previous map, and toucher
         STATE.map.curr:updateMap(dt,STATE.transition.dx,STATE.transition.dy)
@@ -65,13 +55,27 @@ end
 function love.draw()
     STATE.map.curr:drawMap()
     if STATE.map.prev then STATE.map.prev:drawMap() end
-    -- love.graphics.draw(linda, 300, 300)
     touchy:draw()
 end
 
 -- 
 -- HELPER FUNCTIONS --
 --
+
+-- This function is caalled in the main 'update' callback.
+-- Polls for any events and processes them.
+-- Most collisions are processed as events, as well as screen transitions
+function processEvents()
+    local e,a,b,c,d
+    for e,a,b,c,d in love.event.poll() do
+        if     'transition' == e then
+            startTransition(a) -- 'a' is the direction
+        elseif 'collision' == e then
+            -- a and b are collion objects. c and d are x and y collision coords?
+        end
+    end
+end
+
 love.keyboard.allDown = function(...)
     for _,v in ipairs(arg) do
         if not love.keyboard.isDown(v) then return false end
@@ -81,10 +85,10 @@ end
 
 -- Player has reached edge of screen, start transition to new room
 -- @param direction : up, down, left, right
-function changeRoom(direction)
+function startTransition(direction)
     STATE.gamestate = 'transition'
     STATE.map.prev = STATE.map.curr
-    STATE.map.curr = loadMap('maps/core-dump.lua')
+    STATE.map.curr = loadMap('maps/' .. getNextMap(direction) .. '.lua')
     if     'up' == direction then
         STATE.map.curr.y = 0 - GLOBALS.screen.height
         STATE.transition = {dx=0,dy=GLOBALS.transition_speed}
