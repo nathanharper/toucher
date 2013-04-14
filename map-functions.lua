@@ -1,49 +1,53 @@
--- declaring local variables that will be used only inside map-functions.lua
-local tileW, tileH, tileset, quads, tileTable
-
 function loadMap(path)
-  love.filesystem.load(path)() -- attention! extra parenthesis
+  return love.filesystem.load(path)() -- attention! extra parenthesis
+end
+
+-- Helper functions for the sprite container
+local drawMap = function(self)
+  love.graphics.draw(self.sprite,self.x,self.y)
+end
+local updateMap = function(self,dt,dx,dy)
+  dx = dx or 0
+  dy = dy or 0
+  self.x = self.x + (dx*dt)
+  self.y = self.y + (dy*dt)
 end
 
 function newMap(tileWidth, tileHeight, tilesetPath, tileString, quadInfo)
-  
-  tileW = tileWidth
-  tileH = tileHeight
-  tileset = love.graphics.newImage(tilesetPath)
+  local tileW,tileH = tileWidth,tileHeight
+  local tileset = love.graphics.newImage(tilesetPath)
   
   local tilesetW, tilesetH = tileset:getWidth(), tileset:getHeight()
+  local sprite = love.graphics.newSpriteBatch(tileset) -- TODO: set max num of sprites
   
-  quads = {}
+  local quads = {}
   
   for _,info in ipairs(quadInfo) do
     -- info[1] = the character, info[2] = x, info[3] = y
     quads[info[1]] = love.graphics.newQuad(info[2], info[3], tileW,  tileH, tilesetW, tilesetH)
   end
   
-  tileTable = {}
-  
   local width = #(tileString:match("[^\n]+"))
-
-  for x = 1,width,1 do tileTable[x] = {} end
 
   local rowIndex,columnIndex = 1,1
   for row in tileString:gmatch("[^\n]+") do
     assert(#row == width, 'Map is not aligned: width of row ' .. tostring(rowIndex) .. ' should be ' .. tostring(width) .. ', but it is ' .. tostring(#row))
     columnIndex = 1
     for character in row:gmatch(".") do
-      tileTable[columnIndex][rowIndex] = character
+      sprite:addq(quads[character], (columnIndex-1)*tileW, (rowIndex-1)*tileH)
       columnIndex = columnIndex + 1
     end
     rowIndex=rowIndex+1
   end
 
-end
+  -- init x,y, and acceleration
+  local container = {
+      x=0,y=0,
+      sprite = sprite,
+      drawMap = drawMap,
+      updateMap = updateMap
+  }
 
-function drawMap()
-  for columnIndex,column in ipairs(tileTable) do
-    for rowIndex,char in ipairs(column) do
-      local x,y = (columnIndex-1)*tileW, (rowIndex-1)*tileH
-      love.graphics.drawq(tileset, quads[ char ] , x, y)
-    end
-  end
+  return container
+
 end

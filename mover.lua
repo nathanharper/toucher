@@ -2,6 +2,21 @@
 -- create the table representation fo your class and then
 -- call "Mover(class)" on it.
 local anim8 = require "anim8"
+
+-- Helper functions for getting bottom/right position of image.
+local getBottom = function(self)
+    return self:getHeight() + self.y
+end
+local getRight = function(self)
+    return self:getWidth() + self.x
+end
+local getWidth = function(self)
+    return self.quad_size.width
+end
+local getHeight = function(self)
+    return self.quad_size.height
+end
+
 return function(class, vals)
     local defaults = {
         x=0,
@@ -107,4 +122,10 @@ return function(class, vals)
             self.gfx:getWidth(), self.gfx:getHeight()
         )
     end
+
+    -- set some helper functions for getting graphic dimensions
+    class.getBottom = getBottom
+    class.getRight = getRight
+    class.getHeight = getHeight
+    class.getWidth = getWidth
 end

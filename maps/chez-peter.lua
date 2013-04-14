@@ -31,4 +31,4 @@ local quadInfo = {
   { '#', 96,  0 }  -- bricks
 }
 
-newMap(32,32,'/images/resto.png', tileString, quadInfo)
+return newMap(32,32,'/images/resto.png', tileString, quadInfo)
