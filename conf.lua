@@ -8,7 +8,7 @@ GLOBALS = {
         width = 800,
         height = 568
     },
-    transition_speed = 600
+    transition_speed = 800
 }
 
 -- 

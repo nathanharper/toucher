@@ -1,6 +1,7 @@
 require "map-functions"
 require "world-functions"
 local touchy = require "toucher"
+local bump = require "bump" -- small collision detection lib
 
 -- GAME STATE
 local STATE = {

@@ -4,17 +4,21 @@
 local anim8 = require "anim8"
 
 -- Helper functions for getting bottom/right position of image.
-local getBottom = function(self)
+local function getBottom(self)
     return self:getHeight() + self.y
 end
-local getRight = function(self)
+local function getRight(self)
     return self:getWidth() + self.x
 end
-local getWidth = function(self)
+local function getWidth(self)
     return self.quad_size.width
 end
-local getHeight = function(self)
+local function getHeight(self)
     return self.quad_size.height
+end
+
+local function setBoundingBox(self,l,t,w,h)
+  sel.l,self.t,self.w,self.h = l,t,w,h
 end
 
 return function(class, vals)
@@ -29,6 +33,9 @@ return function(class, vals)
         accel = {
             x=0,
             y=0
+        },
+        bounds = { -- bounding box for collisions relative to top-left corner of item
+          l=nil,t=nil,w=nil,h=nil
         },
         animations={},
         gfx=false,
@@ -128,4 +135,5 @@ return function(class, vals)
     class.getRight = getRight
     class.getHeight = getHeight
     class.getWidth = getWidth
+    class.setBoundingBox = setBoundingBox
 end
