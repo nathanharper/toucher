@@ -18,7 +18,7 @@ local function getHeight(self)
 end
 
 local function setBoundingBox(self,l,t,w,h)
-  sel.l,self.t,self.w,self.h = l,t,w,h
+  self.bb.l,self.bb.t,self.bb.w,self.bb.h = l,t,w,h
 end
 
 return function(class, vals)
@@ -34,7 +34,7 @@ return function(class, vals)
             x=0,
             y=0
         },
-        bounds = { -- bounding box for collisions relative to top-left corner of item
+        bb = { -- bounding box for collisions relative to top-left corner of item
           l=nil,t=nil,w=nil,h=nil
         },
         animations={},
