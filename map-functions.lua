@@ -1,11 +1,8 @@
-function loadMap(path)
-  return love.filesystem.load(path)() -- attention! extra parenthesis
-end
-
 -- Helper functions for the sprite container
 local drawMap = function(self)
   love.graphics.draw(self.sprite,self.x,self.y)
 end
+
 local updateMap = function(self,dt,dx,dy)
   dx = dx or 0
   dy = dy or 0
@@ -13,7 +10,7 @@ local updateMap = function(self,dt,dx,dy)
   self.y = self.y + (dy*dt)
 end
 
-function newMap(tileWidth, tileHeight, tilesetPath, tileString, quadInfo)
+local function newMap(tileWidth, tileHeight, tilesetPath, tileString, quadInfo)
   local tileW,tileH = tileWidth,tileHeight
   local tileset = love.graphics.newImage(tilesetPath)
   
@@ -49,5 +46,13 @@ function newMap(tileWidth, tileHeight, tilesetPath, tileString, quadInfo)
   }
 
   return container
-
 end
+
+local function loadMap(path)
+  return love.filesystem.load(path)()
+end
+
+return {
+  loadMap = loadMap,
+  newMap = newMap
+}

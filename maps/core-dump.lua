@@ -30,4 +30,4 @@ local quadInfo = {
   { 'l', 96, 32 }  -- plant bottom
 }
 
-return newMap(32,32,'/images/lab.png', tileString, quadInfo)
+return MAP.newMap(32,32,'/images/lab.png', tileString, quadInfo)
