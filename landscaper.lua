@@ -2,6 +2,11 @@ local landscaper = {}
 local lands = {}
 local width, height, blockW, blockH
 
+local function check_range(left,top)
+  assert(left > 0 and left <= #lands and top > 0 and top <= #lands[1],
+    ("out of range: %s %s"):format(left,top))
+end
+
 -- TODO: implement the boolean table from the Lua manual
 function landscaper.init(w,h,bw,bh)
   width,height,blockW,blockH = w,h,bw,bh
@@ -15,8 +20,7 @@ end
 function landscaper.add(l,t)
   local left = math.floor(l/blockW)+1
   local top = math.floor(t/blockH)+1
-  assert(left >= 1 and left <= #lands and top >= 1 and top <= #lands[1],
-    ("collision out of range: %s %s"):format(left,top))
+  if not pcall(check_range,left,top) then return end
   lands[left][top] = true
 end
 
@@ -24,8 +28,8 @@ end
 function landscaper.collide(x,y)
   local left = math.floor(x/blockW)+1
   local top = math.floor(y/blockH)+1
-  assert(left >= 1 and left <= #lands and top >= 1 and top <= #lands[1],
-    ("collision out of range: %s %s"):format(left,top))
+  if not pcall(check_range,left,top) then return end
+  print(left,top)
   return lands[left][top]
 end
 
