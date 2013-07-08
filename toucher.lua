@@ -1,6 +1,9 @@
+-- assert(BUMP, 'bump must be defined before toucher')
 local Mover = require "mover"
 local toucher = {
   x=100,y=100,speed=100,
+  static=false,
+  collision_name='toucher',
   update = function(self, dt)
     -- check for arrow keys and update position
     local isup = love.keyboard.isDown('up')
@@ -46,7 +49,6 @@ local toucher = {
     end
   end
 }
--- Mover(toucher)
 
 function toucher:load()
   self.gfx = love.graphics.newImage('toucher.png')
@@ -56,10 +58,17 @@ function toucher:load()
   self:add_quad('down',0,0)
 end
 
+function toucher:getBBox()
+  local half_height = self:getHeight() / 2
+  return self.x, self.y + half_height, self:getWidth(), half_height
+end
+
 -- updates position according to dx and dy... mostly for map transitions
 function toucher:setPos(dt,dx,dy)
   self.x = self.x + (dx*dt)
   self.y = self.y + (dy*dt)
 end
 
-return Mover:new(toucher)
+local toreturn = Mover:new(toucher)
+-- BUMP.add(toreturn)
+return toreturn

@@ -28,6 +28,12 @@ end
 function love.update(dt)
   if STATE.gamestate == 'play' then -- Normal game state
     touchy:update(dt) -- Update character position
+    -- BUMP.collide()
+    if LANDSCAPER.collide(touchy.x, touchy.y) then
+      print"collision"
+    elseif BUNG then
+      print"ended!!!"
+    end
     processEvents()
   elseif STATE.gamestate == 'transition' then -- map is in transition
     -- update current map, previous map, and toucher
@@ -55,12 +61,13 @@ end
 -- end
 
 function love.draw()
+  -- touchy:add_to_batch(STATE.map.curr.sprite)
   STATE.map.curr:drawMap()
   if STATE.map.prev then STATE.map.prev:drawMap() end
   touchy:draw()
 end
 
---[====================[ 
+--[====================[
 HELPER FUNCTIONS
 --]====================]
 
@@ -88,6 +95,8 @@ end
 -- Player has reached edge of screen, start transition to new room
 -- @param direction : up, down, left, right
 function startTransition(direction)
+  -- BUMP.clear()
+  LANDSCAPER.clear()
   STATE.gamestate = 'transition'
   STATE.map.prev = STATE.map.curr
   STATE.map.curr = MAP.loadMap('maps/' .. WORLD.getNextMap(direction) .. '.lua')
@@ -120,8 +129,3 @@ function endTransition()
     touchy.y = GLOBALS.screen.height - 1 - touchy:getHeight() 
   end
 end
-
---[==============================[ 
-BUMP CALLBACKS AND DEFINITIONS
---]==============================]
--- function bump

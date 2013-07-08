@@ -2,10 +2,10 @@
 -- create the table representation fo your class and then
 -- call "Mover(class)" on it.
 local anim8 = require "anim8"
-local Class = require "class"
 local mt = {
   x=0,y=0,
   dir='down',
+  static=true,
   velocity = {x=0,y=0},
   accel = {x=0,y=0},
   bb = {l=nil,t=nil,w=nil,h=nil}, -- bounding box
@@ -20,9 +20,8 @@ local mt = {
     right=false
   }
 }
-Class(mt)
--- mt.__index = mt
--- setmetatable(mt, mt)
+
+require"class"(mt)
 
 -- Helper functions for getting bottom/right position of image.
 function mt:getBottom()
@@ -38,9 +37,9 @@ function mt:getHeight()
   return self.quad_size.height
 end
 
-function mt:setBoundingBox(l,t,w,h)
-  self.bb.l,self.bb.t,self.bb.w,self.bb.h = l,t,w,h
-end
+-- function mt:setBoundingBox(l,t,w,h)
+--   self.bb.l,self.bb.t,self.bb.w,self.bb.h = l,t,w,h
+-- end
 
 function mt:animation()
   return self.curr_anim and self.animations[self.curr_anim]
@@ -77,7 +76,7 @@ function mt:set_grid(width, height)
   self.quad_size.height = height
   -- TODO: this will break if gfx is unset
   self.grid = anim8.newGrid(
-    self.quad_size.width, self.quad_size.height, 
+    self.quad_size.width, self.quad_size.height,
     self.gfx:getWidth(), self.gfx:getHeight())
 end
 
@@ -101,4 +100,5 @@ end
 function mt:getBBox(item)
   return self.x, self.y, self:getWidth(), self:getHeight()
 end
+
 return mt

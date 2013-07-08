@@ -13,7 +13,8 @@ GLOBALS = {
 
 MAP   = require "map-functions"
 WORLD = require "world-functions"
-BUMP  = require "bump"
+LANDSCAPER = require "landscaper"
+-- BUMP  = require "bump-functions"
 
 --[===============[
 CONFIG
